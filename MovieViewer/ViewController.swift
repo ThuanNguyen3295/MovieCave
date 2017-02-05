@@ -87,6 +87,13 @@ class ViewController: UIViewController,UITableViewDataSource, UITableViewDelegat
             refreshControl.endRefreshing()
 
     }
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let indexPath = tableView.indexPathForSelectedRow
+        let index = indexPath?.row
+        let detailViewController = segue.destination as! DetailViewController
+        detailViewController.index = index
+        
+    }
     
 
 
