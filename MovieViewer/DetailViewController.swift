@@ -17,44 +17,29 @@ class DetailViewController: UIViewController {
     @IBOutlet weak var ratingLabel: UILabel!
     
     @IBOutlet weak var releaseDateLabel: UILabel!
+    var rating: Double!
+    var titleLabel: String!
     
     var index: Int!
     var detailMovies: [NSDictionary]?
+    var imageURL: NSURL!
+    var overview: String!
+    var votes: Int!
+    var releaseDate: String!
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
         //detailLabel.text = ("U clicked on a movie \(index)")
-        let apiKey = "a07e22bc18f5cb106bfe4cc1f83ad8ed"
-        let url = URL(string: "https://api.themoviedb.org/3/movie/now_playing?api_key=\(apiKey)")!
-        let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 10)
-        let session = URLSession(configuration: .default, delegate: nil, delegateQueue: OperationQueue.main)
-        MBProgressHUD.showAdded(to: self.view, animated: true)
-        let task: URLSessionDataTask = session.dataTask(with: request) { (data: Data?, response: URLResponse?, error: Error?) in
-            MBProgressHUD.hide(for: self.view, animated: true)
-            if let data = data {
-                if let dataDictionary = try! JSONSerialization.jsonObject(with: data, options: []) as? NSDictionary {
-                    print(dataDictionary)
-                    self.detailMovies = dataDictionary["results"] as! [NSDictionary]
-                    let movie = self.detailMovies![self.index]
-                    let title = movie["title"] as! String
-                    self.detailLabel.text = title
-                    let baseURL = "https://image.tmdb.org/t/p/w500/"
-                    let posterPath = movie["poster_path"] as! String
-                    let imageURL = NSURL(string: baseURL + posterPath)
-                    self.posterView.setImageWith(imageURL as! URL)
-                    self.overViewLabel.text = "      \(movie["overview"] as! String)"
-                    let rate = movie["vote_average"] as! Double
-                    let votes = movie["vote_count"] as! Double
-                    self.ratingLabel.text = (String)(rate) + " (" + (String)(votes) + " votes)"
-                    self.releaseDateLabel.text =  movie["release_date"] as! String
+                    self.detailLabel.text = self.titleLabel
+                    self.posterView.setImageWith(self.imageURL as! URL)
                     
-                }
-            }
-        }
+                    self.overViewLabel.text = "    " + overview
+                    overViewLabel.sizeToFit()
+                    self.ratingLabel.text = (String)(self.rating) + " (" + (String)(self.votes) + " votes)"
+                    self.releaseDateLabel.text =  releaseDate
         
-        task.resume()
     }
 
     override func didReceiveMemoryWarning() {
