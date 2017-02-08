@@ -10,12 +10,14 @@ import UIKit
 import AFNetworking
 import MBProgressHUD
 
-class ViewController: UIViewController,UITableViewDataSource, UITableViewDelegate {
+class ViewController: UIViewController,UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate {
 
     @IBOutlet weak var tableView: UITableView!
     
     var movies: [NSDictionary]?
+    var filteredData: [NSDictionary]?
     var endpoint: String = "now_playing"
+    lazy var searchBar = UISearchBar()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,11 +30,15 @@ class ViewController: UIViewController,UITableViewDataSource, UITableViewDelegat
         
         tableView.dataSource = self
         tableView.delegate = self
+        self.searchBar.delegate = self
+        self.navigationItem.titleView = searchBar
+        
+        
         let apiKey = "a07e22bc18f5cb106bfe4cc1f83ad8ed"
         print(endpoint)
         let url = URL(string: "https://api.themoviedb.org/3/movie/\(endpoint)?api_key=\(apiKey)")
-        
-      let request = URLRequest(url: url!, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 10)
+        //let url = URL(string:)
+        let request = URLRequest(url: url!, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 10)
         let session = URLSession(configuration: .default, delegate: nil, delegateQueue: OperationQueue.main)
         MBProgressHUD.showAdded(to: self.view, animated: true)
         let task: URLSessionDataTask = session.dataTask(with: request) { (data: Data?, response: URLResponse?, error: Error?) in
@@ -42,7 +48,7 @@ class ViewController: UIViewController,UITableViewDataSource, UITableViewDelegat
                 if let dataDictionary = try! JSONSerialization.jsonObject(with: data, options: []) as? NSDictionary {
                     print(dataDictionary)
                  self.movies = dataDictionary["results"] as! [NSDictionary]
-                self.tableView.reloadData()
+                 self.tableView.reloadData()
                     
                     
                 }
@@ -56,18 +62,19 @@ class ViewController: UIViewController,UITableViewDataSource, UITableViewDelegat
         // Dispose of any resources that can be recreated.
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
-        if let movies = movies{
-            return movies.count
+        if (self.searchBar.text?.isEmpty)! {
+        return self.movies?.count ?? 0
         }
-        else{
-        return 0
+        else {
+        return self.filteredData?.count ?? 0
         }
+        
         
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
         let cell = tableView.dequeueReusableCell(withIdentifier: "MovieCell", for: indexPath) as! MovieCell
         cell.selectionStyle = .none
-        let movie = movies![indexPath.row]
+        let movie = (self.searchBar.text!.isEmpty) ? movies![indexPath.row] : filteredData![indexPath.row]
         let title = movie["title"] as! String
         cell.titleLabel.text = title
         
@@ -91,10 +98,17 @@ class ViewController: UIViewController,UITableViewDataSource, UITableViewDelegat
             refreshControl.endRefreshing()
 
     }
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        self.filteredData = searchText.isEmpty ? movies : movies?.filter({ (movie) -> Bool in
+            (movie.value(forKey: "title") as! String).range(of: searchText, options: .caseInsensitive, range: nil, locale: nil) != nil
+        })
+        self.tableView.reloadData()
+    
+    }
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let indexPath = tableView.indexPathForSelectedRow
         let index = indexPath?.row
-        let movie = movies![index!]
+        let movie = (self.searchBar.text!.isEmpty) ? movies![(indexPath?.row)!] : filteredData![(indexPath?.row)!]
         let detailViewController = segue.destination as! DetailViewController
         detailViewController.index = index
         detailViewController.rating = movie["vote_average"] as! Double
