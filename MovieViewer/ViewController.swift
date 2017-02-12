@@ -31,6 +31,7 @@ class ViewController: UIViewController,UITableViewDataSource, UITableViewDelegat
         tableView.dataSource = self
         tableView.delegate = self
         self.searchBar.delegate = self
+        
         self.navigationItem.titleView = searchBar
         
         
