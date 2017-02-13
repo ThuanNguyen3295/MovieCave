@@ -107,22 +107,11 @@ class ViewController: UIViewController,UITableViewDataSource, UITableViewDelegat
     
     }
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        let indexPath = tableView.indexPathForSelectedRow
-        let index = indexPath?.row
+        let cell = sender as! UITableViewCell
+        let indexPath = tableView.indexPath(for: cell)
         let movie = (self.searchBar.text!.isEmpty) ? movies![(indexPath?.row)!] : filteredData![(indexPath?.row)!]
         let detailViewController = segue.destination as! DetailViewController
-        detailViewController.index = index
-        detailViewController.rating = movie["vote_average"] as! Double
-        detailViewController.titleLabel = movie["title"] as! String
-        let baseURL = "https://image.tmdb.org/t/p/w500/"
-        let posterPath = movie["poster_path"] as! String
-        
-        detailViewController.imageURL = NSURL(string: baseURL + posterPath)
-        detailViewController.overview = movie["overview"] as! String
-        detailViewController.votes = movie["vote_count"] as! Int
-        detailViewController.releaseDate = movie["release_date"] as! String
-        
-        
+        detailViewController.movie = movie
     }
     
 
