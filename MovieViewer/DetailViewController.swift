@@ -10,6 +10,9 @@ import UIKit
 import MBProgressHUD
 
 class DetailViewController: UIViewController {
+    @IBOutlet weak var scrollView: UIScrollView!
+    @IBOutlet weak var infoView: UIView!
+    
     @IBOutlet weak var detailLabel: UILabel!
     @IBOutlet weak var posterView: UIImageView!
     @IBOutlet weak var overViewLabel: UILabel!
@@ -19,7 +22,6 @@ class DetailViewController: UIViewController {
     @IBOutlet weak var releaseDateLabel: UILabel!
     var rating: Double!
     var titleLabel: String!
-    
     var index: Int!
     var detailMovies: [NSDictionary]?
     var imageURL: NSURL!
@@ -32,6 +34,12 @@ class DetailViewController: UIViewController {
 
         // Do any additional setup after loading the view.
         //detailLabel.text = ("U clicked on a movie \(index)")
+        scrollView.contentSize = CGSize(width: scrollView.frame.size.width, height: infoView.frame.origin.y + infoView.frame.size.height)
+        
+        
+        
+        
+        
                     self.detailLabel.text = self.titleLabel
                     self.posterView.setImageWith(self.imageURL as! URL)
                     

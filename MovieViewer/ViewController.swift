@@ -116,6 +116,7 @@ class ViewController: UIViewController,UITableViewDataSource, UITableViewDelegat
         detailViewController.titleLabel = movie["title"] as! String
         let baseURL = "https://image.tmdb.org/t/p/w500/"
         let posterPath = movie["poster_path"] as! String
+        
         detailViewController.imageURL = NSURL(string: baseURL + posterPath)
         detailViewController.overview = movie["overview"] as! String
         detailViewController.votes = movie["vote_count"] as! Int
