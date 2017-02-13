@@ -52,9 +52,8 @@ class DetailViewController: UIViewController {
                         self.posterView.setImageWith(lowImageRequest as URLRequest, placeholderImage: nil, success: { (lowImageRequest, lowImageRespone, lowImage) in
                             self.posterView.alpha = 0.0
                             self.posterView.image = lowImage;
-                            
+
                             UIView.animate(withDuration: 0.4, animations: { () -> Void in
-                                
                                 self.posterView.alpha = 1.0
                                 
                             }, completion: { (sucess) -> Void in
