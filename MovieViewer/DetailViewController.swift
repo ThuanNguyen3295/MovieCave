@@ -46,8 +46,38 @@ class DetailViewController: UIViewController {
         
         
                     if let posterPath = movie["poster_path"] as? String{
-                        let posterURL = NSURL(string: baseHighURL +  posterPath)
-                        self.posterView.setImageWith(posterURL! as URL)
+                        let lowImageRequest = NSURLRequest(url: NSURL(string: baseLowURL + posterPath)! as URL)
+                        let highImageRequest = NSURLRequest(url: NSURL(string: baseHighURL + posterPath)! as URL)
+
+                        self.posterView.setImageWith(lowImageRequest as URLRequest, placeholderImage: nil, success: { (lowImageRequest, lowImageRespone, lowImage) in
+                            self.posterView.alpha = 0.0
+                            self.posterView.image = lowImage;
+                            
+                            UIView.animate(withDuration: 0.4, animations: { () -> Void in
+                                
+                                self.posterView.alpha = 1.0
+                                
+                            }, completion: { (sucess) -> Void in
+                                
+                                // The AFNetworking ImageView Category only allows one request to be sent at a time
+                                // per ImageView. This code must be in the completion block.
+                                self.posterView.setImageWith(
+                                    highImageRequest as URLRequest,
+                                    placeholderImage: lowImage,
+                                    success: { (highImageRequest, highImageResponse, highImage) -> Void in
+                                        
+                                        self.posterView.image = highImage;
+                                        
+                                },
+                                    failure: { (request, response, error) -> Void in
+                                        // do something for the failure condition of the large image request
+                                        // possibly setting the ImageView's image to a default image
+                                })
+                            })
+                        }, failure: { (highImageRequest, highImageRespone, highImage) in
+                            let posterURL = NSURL(string: baseHighURL + posterPath )
+                            self.posterView.setImageWith(posterURL as! URL)
+                        })
                     }
         
     }
